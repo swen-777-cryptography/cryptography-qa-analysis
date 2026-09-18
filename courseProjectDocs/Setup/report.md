@@ -6,12 +6,11 @@ The testing framework evaluates the core cryptographic operations, bindings, and
 
 - **Unit Tests**: All the tests run were unit tests, focusing on isolated verification of individual functions and classes in both the Python and Rust environments. [GitHub CI Run Here](https://github.com/swen-777-cryptography/cryptography-qa-analysis/actions/workflows/ci.yml)
 - **Integration/System Tests**: Not explicitly separated; integration logic is generally covered within the extensive unit test suite.
-- **UI Tests**: UI code is not covered by tests, as this repository consists entirely of backend cryptographic libraries and has no user interface.
 
 **Execution Instructions:**
 
 - **GitHub Actions**: You can run the GitHub Action manually to execute the test suite in a clean CI environment.
-- **Local Testing**: Clone the repo, run the test suite, and open the generated HTML coverage report to inspect coverage interactively. [Index.html](courseProjectDocs\Setup\coverage-report\function_index.html)
+- **Local Testing**: Clone the repo the [Index.html](courseProjectDocs\Setup\coverage-report\function_index.html) is screenshot of a CI run from 09/18/2026
 
 ## Baseline Coverage Metrics
 
@@ -35,6 +34,5 @@ Based on the generated coverage HTML report:
 
 ## Observations
 
-- **UI Code**: As a backend cryptographic library, UI code is naturally not covered by tests.
 - **Comprehensive Coverage**: The test suite is extremely thorough, maintaining 100% statement and branch coverage across the project.
-- **Dependency Testing**: Dependency testing is highly rigorous ("Dependency testing psychopaths"), effectively verifying compatibility against various OpenSSL, LibreSSL, BoringSSL, and AWS-LC versions and edge cases.
+- **Dependency Testing**: Dependency testing is highly rigorous "Dependency testing psychopaths", effectively verifying compatibility against multiple supported python versions (3.9 - 3.15) across multiple versions of macos, latest windows, several linux distributions along with various OpenSSL, LibreSSL, BoringSSL, and AWS-LC versions and edge cases.
