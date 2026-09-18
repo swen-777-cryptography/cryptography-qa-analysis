@@ -1,0 +1,370 @@
+Run nox --no-install --  --color=yes --wycheproof-root=wycheproof --x509-limbo-root=x509-limbo 
+nox > Running session tests
+nox > Reusing existing virtual environment at .nox/tests.
+nox > uv pip list
+DEBUG Found workspace root: `/home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis`
+DEBUG Adding root workspace member: `/home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis`
+DEBUG Skipping `pyproject.toml` in `/home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis` (no `[tool.uv]` section)
+DEBUG Searching for user configuration in: `/home/runner/.config/uv/uv.toml`
+DEBUG uv 0.12.16 (x86_64-unknown-linux-gnu)
+DEBUG Checking for Python interpreter in directory `.nox/tests`
+Using Python 3.14.7 environment at: .nox/tests
+Package              Version     Editable project location
+-------------------- ----------- ---------------------------------------------------------------------------
+certifi              2026.7.22
+cffi                 2.1.1
+coverage             7.16.1
+cryptography         51.0.0.dev1
+cryptography-vectors 51.0.0.dev1 /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/vectors
+execnet              2.1.2
+iniconfig            2.3.0
+packaging            26.3
+pluggy               1.6.0
+pretend              1.0.9
+py-cpuinfo2          10.1.1
+pycparser            3.0
+pygments             2.21.0
+pytest               9.1.1
+pytest-benchmark     5.3.0
+pytest-cov           7.1.0
+pytest-xdist         3.8.0
+nox > pytest -n auto --dist=worksteal --cov=cryptography --cov=tests --durations=10 --color=yes --wycheproof-root=wycheproof --x509-limbo-root=x509-limbo
+============================= test session starts ==============================
+platform linux -- Python 3.14.7, pytest-9.1.1, pluggy-1.6.0
+benchmark: 5.3.0 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)
+OpenSSL: OpenSSL 3.5.8 25 Aug 2026
+FIPS Enabled: False
+rootdir: /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis
+configfile: pyproject.toml
+testpaths: tests
+plugins: benchmark-5.3.0, cov-7.1.0, xdist-3.8.0
+created: 4/4 workers
+4 workers [4711 items]
+
+................................s....................................... [  1%]
+........................................................................ [  3%]
+........................................................................ [  4%]
+........................................................................ [  6%]
+........................................................................ [  7%]
+........................................................................ [  9%]
+..................................................................s..s.. [ 10%]
+........................................................................ [ 12%]
+.........................s.............................................. [ 13%]
+......................s................................................. [ 15%]
+........................................................................ [ 16%]
+........................................................................ [ 18%]
+........................................................................ [ 19%]
+........................................................................ [ 21%]
+...s.................................................................... [ 22%]
+........................................................................ [ 24%]
+........................................................................ [ 25%]
+..........................s............................................. [ 27%]
+.........................................s.............................. [ 29%]
+.............................................s.......................... [ 30%]
+....................s...............................s................... [ 32%]
+........................................................................ [ 33%]
+........................................................................ [ 35%]
+........................................................................ [ 36%]
+.....s.................................................................. [ 38%]
+........................................................................ [ 39%]
+..............................................................s......... [ 41%]
+........................................................................ [ 42%]
+...................................................................s.... [ 44%]
+........................................................................ [ 45%]
+........................................................................ [ 47%]
+.....................................................................s.. [ 48%]
+.s.s....ss...ss...s.......................................sss.sss....... [ 50%]
+........................................................................ [ 51%]
+........................................................................ [ 53%]
+........................................................................ [ 55%]
+...........................................................s............ [ 56%]
+........................................................................ [ 58%]
+...............................................................s........ [ 59%]
+........................................................................ [ 61%]
+........................................................................ [ 62%]
+........................................................................ [ 64%]
+........................................................................ [ 65%]
+........................................................................ [ 67%]
+........................................................................ [ 68%]
+........................................................................ [ 70%]
+....s................................................................... [ 71%]
+........................................................................ [ 73%]
+........................................................................ [ 74%]
+........................................................................ [ 76%]
+........................................................................ [ 77%]
+........................................................................ [ 79%]
+........................................................................ [ 81%]
+........................................................................ [ 82%]
+..................................s..................................... [ 84%]
+........................................................................ [ 85%]
+........................................................................ [ 87%]
+........................................................................ [ 88%]
+.......................sss.............................................. [ 90%]
+........................................................................ [ 91%]
+........................................................................ [ 93%]
+........................................................................ [ 94%]
+.....................................s.................................. [ 96%]
+........................................................................ [ 97%]
+........................................................................ [ 99%]
+...............................                                          [100%]
+=============================== warnings summary ===============================
+tests/bench/test_x509.py::test_verify_docs_python_org
+  /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/tests/bench/test_x509.py:183: CryptographyDeprecationWarning: Parsed a serial number which wasn't positive (i.e., it was negative or zero), which is disallowed by RFC 5280. Loading this certificate will cause an exception in a future release of cryptography.
+    x509.load_pem_x509_certificates(f.read())
+
+tests/x509/verification/test_limbo.py::test_limbo[1]
+tests/x509/verification/test_limbo.py::test_limbo[2]
+  /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/tests/x509/verification/test_limbo.py:128: CryptographyDeprecationWarning: Parsed a serial number which wasn't positive (i.e., it was negative or zero), which is disallowed by RFC 5280. Loading this certificate will cause an exception in a future release of cryptography.
+    load_pem_x509_certificate(cert.encode())
+
+tests/x509/verification/test_limbo.py::test_limbo[2]
+  /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/tests/x509/verification/test_limbo.py:135: CryptographyDeprecationWarning: Parsed a serial number which wasn't positive (i.e., it was negative or zero), which is disallowed by RFC 5280. Loading this certificate will cause an exception in a future release of cryptography.
+    peer_certificate = load_pem_x509_certificate(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.14.7-final-0 ________________
+
+Name                                                           Stmts   Miss Branch BrPart  Cover
+------------------------------------------------------------------------------------------------
+src/cryptography/__about__.py                                      5      0      0      0   100%
+src/cryptography/__init__.py                                       3      0      0      0   100%
+src/cryptography/cobblestone.py                                    7      0      0      0   100%
+src/cryptography/exceptions.py                                    24      0      0      0   100%
+src/cryptography/fernet.py                                         6      0      0      0   100%
+src/cryptography/hazmat/__init__.py                                2      0      0      0   100%
+src/cryptography/hazmat/_oid.py                                  170      0      0      0   100%
+src/cryptography/hazmat/asn1/__init__.py                           3      0      0      0   100%
+src/cryptography/hazmat/asn1/asn1.py                             207     18     90      4    91%
+src/cryptography/hazmat/backends/__init__.py                       5      0      0      0   100%
+src/cryptography/hazmat/backends/openssl/__init__.py               3      0      0      0   100%
+src/cryptography/hazmat/backends/openssl/backend.py              128     18     38     14    80%
+src/cryptography/hazmat/bindings/__init__.py                       1      0      0      0   100%
+src/cryptography/hazmat/bindings/openssl/__init__.py               1      0      0      0   100%
+src/cryptography/hazmat/bindings/openssl/_conditional.py          42     19      0      0    55%
+src/cryptography/hazmat/bindings/openssl/binding.py               47      0     14      0   100%
+src/cryptography/hazmat/decrepit/__init__.py                       1      0      0      0   100%
+src/cryptography/hazmat/decrepit/ciphers/__init__.py               1      0      0      0   100%
+src/cryptography/hazmat/decrepit/ciphers/algorithms.py            84      0      4      0   100%
+src/cryptography/hazmat/decrepit/ciphers/modes.py                 30      0      0      0   100%
+src/cryptography/hazmat/primitives/__init__.py                     1      0      0      0   100%
+src/cryptography/hazmat/primitives/_asymmetric.py                  3      0      0      0   100%
+src/cryptography/hazmat/primitives/_cipheralgorithm.py            11      0      2      0   100%
+src/cryptography/hazmat/primitives/_modes.py                      27      0     10      0   100%
+src/cryptography/hazmat/primitives/_serialization.py              57      0     18      0   100%
+src/cryptography/hazmat/primitives/asymmetric/__init__.py          1      0      0      0   100%
+src/cryptography/hazmat/primitives/asymmetric/dh.py               31      0      0      0   100%
+src/cryptography/hazmat/primitives/asymmetric/dsa.py              45      0      2      0   100%
+src/cryptography/hazmat/primitives/asymmetric/ec.py              102      1     10      1    98%
+src/cryptography/hazmat/primitives/asymmetric/ed448.py            30      3     10      5    80%
+src/cryptography/hazmat/primitives/asymmetric/ed25519.py          18      0      0      0   100%
+src/cryptography/hazmat/primitives/asymmetric/mldsa.py            79      9     30     15    78%
+src/cryptography/hazmat/primitives/asymmetric/mlkem.py            54      6     20     10    78%
+src/cryptography/hazmat/primitives/asymmetric/padding.py          70      0     18      0   100%
+src/cryptography/hazmat/primitives/asymmetric/rsa.py              78      0     28      0   100%
+src/cryptography/hazmat/primitives/asymmetric/types.py             8      0      0      0   100%
+src/cryptography/hazmat/primitives/asymmetric/utils.py            16      0      2      0   100%
+src/cryptography/hazmat/primitives/asymmetric/x448.py             30      3     10      5    80%
+src/cryptography/hazmat/primitives/asymmetric/x25519.py           28      3      6      3    82%
+src/cryptography/hazmat/primitives/ciphers/__init__.py             4      0      0      0   100%
+src/cryptography/hazmat/primitives/ciphers/aead.py                 9      0      0      0   100%
+src/cryptography/hazmat/primitives/ciphers/algorithms.py          61      0      2      0   100%
+src/cryptography/hazmat/primitives/ciphers/base.py                32      0      8      0   100%
+src/cryptography/hazmat/primitives/ciphers/modes.py               85      0     18      0   100%
+src/cryptography/hazmat/primitives/cmac.py                         4      0      0      0   100%
+src/cryptography/hazmat/primitives/constant_time.py                6      0      2      0   100%
+src/cryptography/hazmat/primitives/hashes.py                     186      0     46      0   100%
+src/cryptography/hazmat/primitives/hmac.py                         6      0      0      0   100%
+src/cryptography/hazmat/primitives/hpke.py                        11      0      0      0   100%
+src/cryptography/hazmat/primitives/kdf/__init__.py                 4      0      0      0   100%
+src/cryptography/hazmat/primitives/kdf/argon2.py                  10      0      0      0   100%
+src/cryptography/hazmat/primitives/kdf/concatkdf.py                8      0      0      0   100%
+src/cryptography/hazmat/primitives/kdf/hkdf.py                     8      0      0      0   100%
+src/cryptography/hazmat/primitives/kdf/kbkdf.py                   14      0      0      0   100%
+src/cryptography/hazmat/primitives/kdf/pbkdf2.py                   6      0      0      0   100%
+src/cryptography/hazmat/primitives/kdf/scrypt.py                   8      0      0      0   100%
+src/cryptography/hazmat/primitives/kdf/x963kdf.py                  6      0      0      0   100%
+src/cryptography/hazmat/primitives/keywrap.py                      9      0      0      0   100%
+src/cryptography/hazmat/primitives/padding.py                     30      0      4      0   100%
+src/cryptography/hazmat/primitives/poly1305.py                     4      0      0      0   100%
+src/cryptography/hazmat/primitives/serialization/__init__.py       9      0      0      0   100%
+src/cryptography/hazmat/primitives/serialization/base.py           8      0      0      0   100%
+src/cryptography/hazmat/primitives/serialization/pkcs7.py        162      1     64      1    99%
+src/cryptography/hazmat/primitives/serialization/pkcs12.py        58      0     18      0   100%
+src/cryptography/hazmat/primitives/serialization/ssh.py          794     14    226      4    98%
+src/cryptography/hazmat/primitives/twofactor/__init__.py           3      0      0      0   100%
+src/cryptography/hazmat/primitives/twofactor/hotp.py              50      0     14      0   100%
+src/cryptography/hazmat/primitives/twofactor/totp.py              20      0      4      0   100%
+src/cryptography/utils.py                                         76      0     16      0   100%
+src/cryptography/x509/__init__.py                                 71      0      0      0   100%
+src/cryptography/x509/base.py                                    334      0    182      0   100%
+src/cryptography/x509/certificate_transparency.py                 14      0      0      0   100%
+src/cryptography/x509/extensions.py                             1144      0    290      0   100%
+src/cryptography/x509/general_name.py                            163      0     34      0   100%
+src/cryptography/x509/name.py                                    238      0     68      0   100%
+src/cryptography/x509/ocsp.py                                    151      0     64      0   100%
+src/cryptography/x509/oid.py                                       3      0      0      0   100%
+src/cryptography/x509/verification.py                             15      0      0      0   100%
+tests/__init__.py                                                  0      0      0      0   100%
+tests/bench/__init__.py                                            0      0      0      0   100%
+tests/bench/test_aead.py                                          52      2      0      0    96%
+tests/bench/test_ec_load.py                                        5      0      0      0   100%
+tests/bench/test_fernet.py                                         4      0      0      0   100%
+tests/bench/test_hashes.py                                         7      0      0      0   100%
+tests/bench/test_hkdf.py                                           7      0      0      0   100%
+tests/bench/test_hmac.py                                           7      0      0      0   100%
+tests/bench/test_x509.py                                          80      0      0      0   100%
+tests/conftest.py                                                 48      7     10      3    76%
+tests/deprecated_module.py                                         4      0      0      0   100%
+tests/doubles.py                                                  65      0      0      0   100%
+tests/hazmat/__init__.py                                           0      0      0      0   100%
+tests/hazmat/asn1/__init__.py                                      0      0      0      0   100%
+tests/hazmat/asn1/test_api.py                                    285      2      4      2    99%
+tests/hazmat/asn1/test_serialization.py                          870      1      8      1    99%
+tests/hazmat/backends/__init__.py                                  0      0      0      0   100%
+tests/hazmat/backends/test_openssl.py                             86      7     18      7    87%
+tests/hazmat/bindings/test_openssl.py                             68      2     10      5    91%
+tests/hazmat/primitives/__init__.py                                0      0      0      0   100%
+tests/hazmat/primitives/decrepit/__init__.py                       0      0      0      0   100%
+tests/hazmat/primitives/decrepit/test_3des.py                     28      0      0      0   100%
+tests/hazmat/primitives/decrepit/test_algorithms.py              138      0      0      0   100%
+tests/hazmat/primitives/decrepit/test_arc4.py                      9      0      0      0   100%
+tests/hazmat/primitives/decrepit/test_rc2.py                      10      0      0      0   100%
+tests/hazmat/primitives/fixtures_dh.py                             6      0      0      0   100%
+tests/hazmat/primitives/fixtures_dsa.py                           11      0      0      0   100%
+tests/hazmat/primitives/fixtures_ec.py                             7      0      0      0   100%
+tests/hazmat/primitives/fixtures_rsa.py                           17      0      0      0   100%
+tests/hazmat/primitives/test_aead.py                            1069     19     48      7    98%
+tests/hazmat/primitives/test_aes.py                              140      4     20      4    95%
+tests/hazmat/primitives/test_aes_gcm.py                          143      1      2      1    99%
+tests/hazmat/primitives/test_argon2.py                           129      2      2      0    98%
+tests/hazmat/primitives/test_asym_utils.py                        43      0      0      0   100%
+tests/hazmat/primitives/test_block.py                            121      0      0      0   100%
+tests/hazmat/primitives/test_camellia.py                          20      0      0      0   100%
+tests/hazmat/primitives/test_chacha20.py                         138      0      4      0   100%
+tests/hazmat/primitives/test_ciphers.py                          163      0      0      0   100%
+tests/hazmat/primitives/test_cmac.py                              99      0      0      0   100%
+tests/hazmat/primitives/test_concatkdf.py                        156      0      0      0   100%
+tests/hazmat/primitives/test_constant_time.py                     16      0      0      0   100%
+tests/hazmat/primitives/test_dh.py                               478      7     34      7    97%
+tests/hazmat/primitives/test_dsa.py                              384      0      8      0   100%
+tests/hazmat/primitives/test_ec.py                               673     11     38      4    98%
+tests/hazmat/primitives/test_ed448.py                            151      6      2      0    96%
+tests/hazmat/primitives/test_ed25519.py                          148      0      6      0   100%
+tests/hazmat/primitives/test_hash_vectors.py                      73      0      4      0   100%
+tests/hazmat/primitives/test_hashes.py                           126      0      0      0   100%
+tests/hazmat/primitives/test_hkdf.py                             152      0      0      0   100%
+tests/hazmat/primitives/test_hkdf_vectors.py                       8      0      0      0   100%
+tests/hazmat/primitives/test_hmac.py                              59      0      0      0   100%
+tests/hazmat/primitives/test_hmac_vectors.py                      30      0      0      0   100%
+tests/hazmat/primitives/test_hpke.py                             517     14     74     14    95%
+tests/hazmat/primitives/test_kbkdf.py                            215      0      0      0   100%
+tests/hazmat/primitives/test_kbkdf_vectors.py                      5      0      0      0   100%
+tests/hazmat/primitives/test_keywrap.py                          102      0     16      0   100%
+tests/hazmat/primitives/test_mldsa.py                            385     21     12      0    95%
+tests/hazmat/primitives/test_mlkem.py                            160     12      4      0    93%
+tests/hazmat/primitives/test_padding.py                          144      0      2      0   100%
+tests/hazmat/primitives/test_pbkdf2hmac.py                        64      0      0      0   100%
+tests/hazmat/primitives/test_pbkdf2hmac_vectors.py                16      0      4      0   100%
+tests/hazmat/primitives/test_pkcs7.py                            607      8     12      2    98%
+tests/hazmat/primitives/test_pkcs12.py                           475      1     30      1    99%
+tests/hazmat/primitives/test_poly1305.py                          88      2      0      0    98%
+tests/hazmat/primitives/test_rsa.py                              925     16     46      5    97%
+tests/hazmat/primitives/test_scrypt.py                           139      2      2      0    99%
+tests/hazmat/primitives/test_serialization.py                    654      7     26      3    98%
+tests/hazmat/primitives/test_sm4.py                               76      0      0      0   100%
+tests/hazmat/primitives/test_ssh.py                              811     41     50      5    94%
+tests/hazmat/primitives/test_x448.py                             135      6      2      0    96%
+tests/hazmat/primitives/test_x963_vectors.py                      30      0      6      0   100%
+tests/hazmat/primitives/test_x963kdf.py                           72      0      0      0   100%
+tests/hazmat/primitives/test_x25519.py                           165      6      2      0    96%
+tests/hazmat/primitives/test_xofhash.py                           96      2     10      0    98%
+tests/hazmat/primitives/twofactor/__init__.py                      0      0      0      0   100%
+tests/hazmat/primitives/twofactor/test_hotp.py                    71      0      0      0   100%
+tests/hazmat/primitives/twofactor/test_totp.py                    76      0      0      0   100%
+tests/hazmat/primitives/utils.py                                 302      3     38      3    98%
+tests/hazmat/test_oid.py                                          25      0      0      0   100%
+tests/test_cobblestone.py                                        281      0      6      0   100%
+tests/test_cryptography_utils.py                                   9      0      0      0   100%
+tests/test_doubles.py                                             62      0      0      0   100%
+tests/test_fernet.py                                             211      0      0      0   100%
+tests/test_meta.py                                                14      0      0      0   100%
+tests/test_utils.py                                              165      0      0      0   100%
+tests/test_warnings.py                                            38      0      0      0   100%
+tests/utils.py                                                   638      0    370      0   100%
+tests/wycheproof/__init__.py                                       0      0      0      0   100%
+tests/wycheproof/test_aes.py                                     100      2     20      2    97%
+tests/wycheproof/test_chacha20poly1305.py                         30      0      4      0   100%
+tests/wycheproof/test_cmac.py                                     22      0      4      0   100%
+tests/wycheproof/test_cobblestone.py                              30      0      4      0   100%
+tests/wycheproof/test_dsa.py                                      19      0      2      0   100%
+tests/wycheproof/test_ecdh.py                                     45      0      6      0   100%
+tests/wycheproof/test_ecdsa.py                                    22      1      4      1    92%
+tests/wycheproof/test_eddsa.py                                    22      0      4      0   100%
+tests/wycheproof/test_hkdf.py                                     16      0      2      0   100%
+tests/wycheproof/test_hmac.py                                     23      1      6      1    93%
+tests/wycheproof/test_keywrap.py                                  35      0      8      0   100%
+tests/wycheproof/test_mldsa.py                                   150      0     22      0   100%
+tests/wycheproof/test_mlkem.py                                    88      6      0      0    93%
+tests/wycheproof/test_pbkdf2.py                                   14      0      2      0   100%
+tests/wycheproof/test_rsa.py                                      84      7     28      5    88%
+tests/wycheproof/test_utils.py                                     4      0      0      0   100%
+tests/wycheproof/test_x448.py                                     25      0      4      0   100%
+tests/wycheproof/test_x25519.py                                   18      0      2      0   100%
+tests/wycheproof/utils.py                                         12      0      2      0   100%
+tests/x509/__init__.py                                             0      0      0      0   100%
+tests/x509/test_name.py                                           26      0      4      0   100%
+tests/x509/test_ocsp.py                                          730      0      8      0   100%
+tests/x509/test_x509.py                                         2346      6     38      6    99%
+tests/x509/test_x509_crlbuilder.py                               390      0      0      0   100%
+tests/x509/test_x509_ext.py                                     2518      0      6      0   100%
+tests/x509/test_x509_revokedcertbuilder.py                       103      0      2      0   100%
+tests/x509/verification/__init__.py                                0      0      0      0   100%
+tests/x509/verification/test_limbo.py                             75      1     24      1    98%
+tests/x509/verification/test_verification.py                     348      0     14      0   100%
+------------------------------------------------------------------------------------------------
+TOTAL                                                          26684    331   2522    152    98%
+============================= slowest 10 durations =============================
+2.67s call     tests/x509/verification/test_limbo.py::test_limbo[1]
+2.66s call     tests/x509/verification/test_limbo.py::test_limbo[2]
+2.42s call     tests/wycheproof/test_rsa.py::test_rsa_oaep_encryption[rsa_oaep_misc_test.json]
+1.78s call     tests/wycheproof/test_ecdh.py::test_ecdh[ecdh_secp521r1_test.json]
+1.48s call     tests/hazmat/primitives/test_aes_gcm.py::TestAESModeGCM::test_gcm
+1.46s call     tests/x509/verification/test_limbo.py::test_limbo[3]
+1.45s call     tests/x509/verification/test_limbo.py::test_limbo[0]
+1.35s call     tests/hazmat/primitives/test_dsa.py::TestDSASignature::test_dsa_signing
+1.26s call     tests/hazmat/primitives/test_rsa.py::TestRSADecryption::test_decrypt_oaep_sha2_vectors
+1.21s call     tests/hazmat/primitives/test_ciphers.py::test_update_auto_chunking
+=========================== short test summary info ============================
+SKIPPED [1] tests/hazmat/primitives/test_ec.py:853: Requires FIPS (<OpenSSLBackend(version: OpenSSL 3.5.8 25 Aug 2026, FIPS: False, Legacy: True)>)
+SKIPPED [1] tests/hazmat/primitives/test_ed448.py:29: Requires OpenSSL without Ed448 support (<OpenSSLBackend(version: OpenSSL 3.5.8 25 Aug 2026, FIPS: False, Legacy: True)>)
+SKIPPED [1] tests/hazmat/primitives/test_ed448.py:64: ed448 contexts are not currently supported
+SKIPPED [1] tests/hazmat/primitives/test_rsa.py:1778: Does not support PKCS1v1.5. (<OpenSSLBackend(version: OpenSSL 3.5.8 25 Aug 2026, FIPS: False, Legacy: True)>)
+SKIPPED [1] tests/hazmat/primitives/test_aead.py:48: Requires OpenSSL without ChaCha20Poly1305 support
+SKIPPED [1] tests/hazmat/primitives/test_aead.py:757: Requires OpenSSL without AESOCB3 support
+SKIPPED [1] tests/hazmat/primitives/test_rsa.py:2152: Requires FIPS (<OpenSSLBackend(version: OpenSSL 3.5.8 25 Aug 2026, FIPS: False, Legacy: True)>)
+SKIPPED [1] tests/hazmat/primitives/test_aes.py:264: AES-256 in dummy-mode mode not supported
+SKIPPED [1] tests/hazmat/primitives/test_rsa.py:2491: Requires FIPS (<OpenSSLBackend(version: OpenSSL 3.5.8 25 Aug 2026, FIPS: False, Legacy: True)>)
+SKIPPED [1] tests/hazmat/primitives/test_scrypt.py:52: Supports scrypt so can't test unsupported path (<OpenSSLBackend(version: OpenSSL 3.5.8 25 Aug 2026, FIPS: False, Legacy: True)>)
+SKIPPED [1] tests/hazmat/primitives/test_mldsa.py:87: Requires a backend without ML-DSA support (<OpenSSLBackend(version: OpenSSL 3.5.8 25 Aug 2026, FIPS: False, Legacy: True)>)
+SKIPPED [1] tests/hazmat/primitives/test_mldsa.py:465: Requires a backend without SHAKE256 support (<OpenSSLBackend(version: OpenSSL 3.5.8 25 Aug 2026, FIPS: False, Legacy: True)>)
+SKIPPED [1] tests/hazmat/primitives/test_mlkem.py:65: Requires a backend without ML-KEM support (<OpenSSLBackend(version: OpenSSL 3.5.8 25 Aug 2026, FIPS: False, Legacy: True)>)
+SKIPPED [1] tests/hazmat/primitives/test_argon2.py:37: Supports argon2 so can't test unsupported path (<OpenSSLBackend(version: OpenSSL 3.5.8 25 Aug 2026, FIPS: False, Legacy: True)>)
+SKIPPED [5] tests/hazmat/primitives/test_ssh.py:176: Requires bcrypt module
+SKIPPED [1] tests/hazmat/primitives/test_ssh.py:281: Requires that bcrypt exists (<OpenSSLBackend(version: OpenSSL 3.5.8 25 Aug 2026, FIPS: False, Legacy: True)>)
+SKIPPED [1] tests/hazmat/primitives/test_ssh.py:300: Requires that bcrypt exists (<OpenSSLBackend(version: OpenSSL 3.5.8 25 Aug 2026, FIPS: False, Legacy: True)>)
+SKIPPED [1] tests/hazmat/primitives/test_ssh.py:315: Requires that bcrypt exists (<OpenSSLBackend(version: OpenSSL 3.5.8 25 Aug 2026, FIPS: False, Legacy: True)>)
+SKIPPED [6] tests/hazmat/primitives/test_ssh.py:686: Requires that bcrypt exists (<OpenSSLBackend(version: OpenSSL 3.5.8 25 Aug 2026, FIPS: False, Legacy: True)>)
+SKIPPED [1] tests/hazmat/primitives/test_x25519.py:30: Requires OpenSSL without X25519 support (<OpenSSLBackend(version: OpenSSL 3.5.8 25 Aug 2026, FIPS: False, Legacy: True)>)
+SKIPPED [1] tests/hazmat/primitives/test_x448.py:29: Requires OpenSSL without X448 support (<OpenSSLBackend(version: OpenSSL 3.5.8 25 Aug 2026, FIPS: False, Legacy: True)>)
+SKIPPED [1] tests/hazmat/primitives/test_xofhash.py:29: Requires backend without XOF support (<OpenSSLBackend(version: OpenSSL 3.5.8 25 Aug 2026, FIPS: False, Legacy: True)>)
+SKIPPED [1] tests/hazmat/primitives/test_dh.py:447: DH keys less than 512 bits are unsupported
+SKIPPED [1] tests/hazmat/primitives/test_pkcs7.py:1579: Requires OpenSSL with no PKCS1 v1.5 padding support (<OpenSSLBackend(version: OpenSSL 3.5.8 25 Aug 2026, FIPS: False, Legacy: True)>)
+SKIPPED [1] tests/hazmat/primitives/test_pkcs7.py:1591: Requires OpenSSL with no PKCS1 v1.5 padding support (<OpenSSLBackend(version: OpenSSL 3.5.8 25 Aug 2026, FIPS: False, Legacy: True)>)
+SKIPPED [1] tests/hazmat/primitives/test_poly1305.py:26: Requires OpenSSL without poly1305 support (<OpenSSLBackend(version: OpenSSL 3.5.8 25 Aug 2026, FIPS: False, Legacy: True)>)
+SKIPPED [1] tests/hazmat/primitives/test_ec.py:564: ECDSA deterministic signing is supported by this backend <OpenSSLBackend(version: OpenSSL 3.5.8 25 Aug 2026, FIPS: False, Legacy: True)>
+================ 4675 passed, 36 skipped, 4 warnings in 24.55s =================
+nox > rustc --print target-libdir
+nox > /home/runner/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu/bin/llvm-profdata merge -sparse /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3370.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3341.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3407.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-2743.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3337.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3382.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3355.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3403.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3396.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3359.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3374.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3380.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3360.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3387.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3375.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3373.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-2746.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3399.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-2749.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-2740.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3366.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3386.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3367.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3388.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3338.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3385.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3404.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3409.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3347.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3365.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3393.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3364.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3392.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3363.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3391.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3389.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3362.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3378.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3371.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3369.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3358.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3402.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3398.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3368.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3361.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3408.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3394.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3339.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3351.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3342.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3383.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3334.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3401.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3333.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-2726.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3384.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3344.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3390.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3406.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3395.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3372.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3376.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3379.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3335.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3405.profraw /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.rust-cov/c3c38184-4a99-454b-b3da-1f6f63e2fd65/cov-3356.profraw -o rust-cov.profdata
+nox > /home/runner/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu/bin/llvm-cov export /home/runner/work/cryptography-qa-analysis/cryptography-qa-analysis/.nox/tests/lib/python3.14/site-packages/cryptography/hazmat/bindings/_rust.abi3.so -instr-profile=rust-cov.profdata '--ignore-filename-regex=[/\].cargo[/\]' '--ignore-filename-regex=[/\]rustc[/\]' '--ignore-filename-regex=[/\].rustup[/\]toolchains[/\]' '--ignore-filename-regex=[/\]target[/\]' --format=lcov
+nox > Session tests was successful in 26 seconds.
