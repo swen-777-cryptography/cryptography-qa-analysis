@@ -10,7 +10,8 @@ The testing framework evaluates the core cryptographic operations, bindings, and
 **Execution Instructions:**
 
 - **GitHub Actions**: You can run the GitHub Action manually to execute the test suite in a clean CI environment.
-- **Local Testing**: Clone the repo the [Index.html](courseProjectDocs\Setup\coverage-report\function_index.html) is screenshot of a CI run from 09/18/2026
+- **Local Testing**: Clone the repo, install the `nox` pip package, run `nox -e local`. Many tests will be skipped due to your environment not having the correct openssl.
+- **Coverage Results**: Clone the repo the [Index.html](courseProjectDocs\Setup\coverage-report\function_index.html) is screenshot of a CI run from 09/18/2026
 
 ## Baseline Coverage Metrics
 
