@@ -36,4 +36,5 @@ Based on the generated coverage HTML report:
 ## Observations
 
 - **Comprehensive Coverage**: The test suite is extremely thorough, maintaining 100% statement and branch coverage across the project.
-- **Dependency Testing**: Dependency testing is highly rigorous "Dependency testing psychopaths", effectively verifying compatibility against multiple supported python versions (3.9 - 3.15) across multiple versions of macos, latest windows, several linux distributions along with various OpenSSL, LibreSSL, BoringSSL, and AWS-LC versions and edge cases.
+- **Dependency Testing**: Dependency testing is highly rigorous "Dependency testing psychopaths", verifying compatibility against multiple supported Python versions (3.9 - 3.15), across multiple versions of macOs, latest Windows, several Linux distributions on x86, ARM, and PowerPC architectures. The CI pipeline also performs independent tests of external libraries, including various OpenSSL, LibreSSL, BoringSSL, and AWS-LC versions and edge cases.
+  - Note that because GitHub's public CI runners do not support the PowerPC architecture, we have omitted these tests from our pipeline.
