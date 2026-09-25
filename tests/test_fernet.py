@@ -131,6 +131,14 @@ class TestFernet:
                 current_time=int(time.time()),
             )
 
+    def test_tampered_ciphertext(self):
+        f = Fernet(base64.urlsafe_b64encode(b"\x00" * 32))
+        pt = b"encrypt me"
+        token = f.encrypt(pt)
+        tampered_token = token[:-1] + (b"A" if token[-1:] != b"A" else b"B")
+        with pytest.raises(InvalidToken):
+            f.decrypt(tampered_token)
+
     @pytest.mark.parametrize("message", [b"", b"Abc!", b"\x00\xff\x00\x80"])
     def test_roundtrips(self, message):
         f = Fernet(Fernet.generate_key())
