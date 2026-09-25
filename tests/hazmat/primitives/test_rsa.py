@@ -2865,17 +2865,18 @@ class TestRSAPEMPublicKeySerialization:
             message,
             padding.PSS(
                 mgf=padding.MGF1(hashes.SHA256()),
-                salt_length=padding.PSS.MAX_LENGTH,
+                salt_length=32,
             ),
             hashes.SHA256(),
         )
+    
         with pytest.raises(InvalidSignature):
             public_key.verify(
                 signature,
                 b"modified message",
                 padding.PSS(
                     mgf=padding.MGF1(hashes.SHA256()),
-                    salt_length=padding.PSS.MAX_LENGTH,
+                    salt_length=32,
                 ),
                 hashes.SHA256(),
             )
