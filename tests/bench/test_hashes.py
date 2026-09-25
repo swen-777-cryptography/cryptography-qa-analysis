@@ -12,3 +12,11 @@ def test_sha256(benchmark):
         return h.finalize()
 
     benchmark(bench)
+
+
+def test_sha256_empty(benchmark):
+    def bench():
+        h = hashes.Hash(hashes.SHA256())
+        return h.finalize()
+
+    benchmark(bench)

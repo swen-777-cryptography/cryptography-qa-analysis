@@ -139,6 +139,15 @@ class TestFernet:
         with pytest.raises(InvalidToken):
             f.decrypt(tampered_token)
 
+    def test_tampered_key(self):
+        f = Fernet(base64.urlsafe_b64encode(b"\x00" * 32))
+        pt = b"encrypt me"
+        token = f.encrypt(pt)
+        tampered_key = base64.urlsafe_b64encode(b"\x01" * 32)
+        f2 = Fernet(tampered_key)
+        with pytest.raises(InvalidToken):
+            f2.decrypt(token)
+
     @pytest.mark.parametrize("message", [b"", b"Abc!", b"\x00\xff\x00\x80"])
     def test_roundtrips(self, message):
         f = Fernet(Fernet.generate_key())

@@ -2854,3 +2854,28 @@ class TestRSAPEMPublicKeySerialization:
         key1 = rsa_key_512
 
         assert key1.private_numbers() != key2.private_numbers()
+
+    def test_rsa_signature_rejects_modified_message(
+        self, rsa_key_2048: rsa.RSAPrivateKey
+    ):
+        private_key = rsa_key_2048
+        public_key = private_key.public_key()
+        message = b"message to sign"
+        signature = private_key.sign(
+            message,
+            padding.PSS(
+                mgf=padding.MGF1(hashes.SHA256()),
+                salt_length=padding.PSS.MAX_LENGTH,
+            ),
+            hashes.SHA256(),
+        )
+        with pytest.raises(InvalidSignature):
+            public_key.verify(
+                signature,
+                b"modified message",
+                padding.PSS(
+                    mgf=padding.MGF1(hashes.SHA256()),
+                    salt_length=padding.PSS.MAX_LENGTH,
+                ),
+                hashes.SHA256(),
+            )

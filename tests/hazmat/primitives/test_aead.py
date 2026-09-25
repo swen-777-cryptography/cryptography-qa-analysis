@@ -753,6 +753,19 @@ class TestAESGCM:
         with pytest.raises(InvalidTag):
             aesgcm.decrypt_into(nonce, bytes(corrupted_ct), ad, buf)
 
+    def test_aes_gcm_rejects_modified_associated_data(self):
+        key = AESGCM.generate_key(128)
+        aesgcm = AESGCM(key)
+        nonce = os.urandom(12)
+        pt = b"some data"
+        ad = b"additional"
+        ct = aesgcm.encrypt(nonce, pt, ad)
+        # Corrupt the associated data
+        corrupted_ad = bytearray(ad)
+        corrupted_ad[0] ^= 1
+        with pytest.raises(InvalidTag):
+            aesgcm.decrypt(nonce, ct, bytes(corrupted_ad))
+
 
 @pytest.mark.skipif(
     _aead_supported(AESOCB3),
