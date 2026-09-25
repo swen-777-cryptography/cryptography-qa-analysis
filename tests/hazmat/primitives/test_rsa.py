@@ -2869,7 +2869,7 @@ class TestRSAPEMPublicKeySerialization:
             ),
             hashes.SHA256(),
         )
-    
+
         with pytest.raises(InvalidSignature):
             public_key.verify(
                 signature,
