@@ -1,17 +1,16 @@
 # Unit Testing I (Extend Coverage)
 
-## New Test Cases & Rationale
-
-We extended the test suite by targeting two distinct areas: **Boundary Value Analysis (BVA)** and **Security Edge-Cases (Tampering/Validation)**.
+### Preface
+The `cryptography` package already has incredibly high testing standards. The CI pipeline is configured to fail below *100%*, so opportunities to increase coverage are few and far between. That said, we did manage to find a few improvable areas.
 
 ### 1. BVA on Padding Block Sizes
-We applied Boundary Value Analysis to the block size validation logic in the `PKCS7` padding implementation (`src/cryptography/hazmat/primitives/padding.py`).
+By applying Boundary Value Analysis to the block size validation logic in the `PKCS7` padding implementation (`src/cryptography/hazmat/primitives/padding.py`), we identified the following bounds:
 
 The block size validation checks two rules:
 1. It must be in the range `[0, 2040]`.
 2. It must be a multiple of 8.
 
-Previously, the tests only checked arbitrary invalid values (`127`, `4096`, `-2`). We added 5 explicit boundary tests to ensure there are no off-by-one regressions:
+However, only three arbitrary values (`127`, `4096`, `-2`) are included in the invalid parameter set. We added 5 specific boundary tests to ensure there are no off-by-one defects:
 
 ```python
     def test_bva_block_size_negative_one(self):
@@ -41,7 +40,7 @@ Previously, the tests only checked arbitrary invalid values (`127`, `4096`, `-2`
 ```
 
 ### 2. Cryptographic Tampering and Edge-Case Logic
-To further enforce robustness against malicious or malformed inputs, we added 5 more tests across various cryptographic primitives:
+We also added 5 more tests across various cryptographic primitives to cover certain malformed/malicious inputs:
 
 | Test Name | File | Rationale |
 |-----------|------|-----------|
@@ -61,10 +60,4 @@ To further enforce robustness against malicious or malformed inputs, we added 5 
 
 ## Coverage Improvement Analysis
 
-When comparing with the Baseline, our overall line and branch coverage remains at **100%**. 
-
-**Why didn't the percentage go up?**
-Because the baseline repository was already exceptionally well-tested and boasted 100% statement and branch coverage. The lines handling validation logic, `ValueError`, `InvalidToken`, and `InvalidSignature` were already being executed by non-boundary and standard failure test cases.
-
-**Why is this an improvement?**
-Even with 100% branch coverage, logic can be flawed due to boundary off-by-one errors or missing strict validation on tampered states. By explicitly extending coverage to strictly assert boundary constraints using BVA, and validating active data tampering, we have significantly improved the **robustness** of the test suite against edge-case security regressions. Coverage metrics measure executed lines, but BVA and tampering tests measure logical security completeness.
+Our overall coverage remains at 100%, though in this case it would be concerning if adding new test cases impacted coverage.
