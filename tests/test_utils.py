@@ -40,10 +40,18 @@ from .utils import (
 
 
 def test_int_to_bytes_rejects_zero_length():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="^length argument can't be 0$"):
         cryptography.utils.int_to_bytes(123, 0)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="^length argument can't be 0$"):
         cryptography.utils.int_to_bytes(0, 0)
+
+def test_int_to_bytes_correctness():
+    assert cryptography.utils.int_to_bytes(0) == b'\x00'
+    assert cryptography.utils.int_to_bytes(1) == b'\x01'
+    assert cryptography.utils.int_to_bytes(255) == b'\xff'
+    assert cryptography.utils.int_to_bytes(256) == b'\x01\x00'
+    assert cryptography.utils.int_to_bytes(1, 2) == b'\x00\x01'
+
 
 
 def test_check_backend_support_skip():
