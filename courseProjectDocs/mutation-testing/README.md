@@ -9,6 +9,7 @@ To run mutation testing using `mutmut` on this project, you must use **Windows S
 We have provided two bash scripts to automatically provision the WSL environment, install Rust/OpenSSL, and execute the mutation tests securely without polluting your Windows environment.
 
 ### Setup Environment
+
 Run the setup script inside WSL. It will ask for your `sudo` password to install system dependencies (like `pkg-config`, `libssl-dev`), create a Linux-native virtual environment (`.venv-wsl`), install all testing packages, and compile the Rust extensions.
 
 ```bash
@@ -16,6 +17,7 @@ bash courseProjectDocs/mutation-testing/setup-mutmut-wsl.sh
 ```
 
 ### Run Mutation Tests
+
 Once setup is complete, use the run script to automatically clear old caches and execute `mutmut run`. It reads from our updated `setup.cfg` configuration file automatically.
 
 ```bash
@@ -30,4 +32,3 @@ The run script will output the results at the end. To see the diff for a specifi
 source .venv-wsl/bin/activate
 mutmut show cryptography.utils.x_int_to_bytes__mutmut_5
 ```
-

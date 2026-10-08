@@ -40,7 +40,3 @@ def test_int_to_bytes_correctness():
 - **Untested**: 26
 - **Mutation Score**: ~49.1% (28 / (83 - 26))
 *(Note: After correcting the `pytest` OpenSSL startup overhead by isolating tests with `forkserver`, 17 of the 18 mutants in `int_to_bytes` were successfully killed by our new test assertions. The only surviving mutant, #9, drops the `"big"` argument from `integer.to_bytes()`. Because Python 3.11+ defaults to `byteorder="big"`, this is an "equivalent mutant" whose behavior is mathematically identical to the original code, making it impossible to kill!)*
-
-## Group Contributions
-
-- [Group Member 1]: Set up the mutation testing framework (`mutmut` in WSL), documented instructions, and created the initial report template.
