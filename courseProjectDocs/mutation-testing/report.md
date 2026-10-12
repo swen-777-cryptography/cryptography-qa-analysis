@@ -10,13 +10,13 @@
 
 - **Mutants Generated**: 83
 - **Mutants Killed**: 43 (7 explicitly failed tests, 36 timed out)
-- **Mutants Survived**: 14 (specifically in `int_to_bytes` logic)
+- **Mutants Survived**: 14 (specifically in `int_to_bytes` logic)1
 - **Untested**: 26
 - **Mutation Score**: ~75.4% (Killed / (Generated - Untested))
 
 ## Newly Added Tests
 
-**Test Added by Ivan**:
+**Tests Added**:
 
 - **Targeted Mutant**: `cryptography.utils.x_int_to_bytes__mutmut_16` and others within `int_to_bytes`.
 - **Test File**: `tests/test_utils.py`
