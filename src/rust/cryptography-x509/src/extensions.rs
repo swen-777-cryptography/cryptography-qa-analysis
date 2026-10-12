@@ -397,4 +397,23 @@ mod tests {
         assert!(ku.encipher_only());
         assert!(ku.decipher_only());
     }
+
+    #[test]
+    fn test_keyusage_zeroed_and_unset_bits() {
+        let ku_zero_bits = [0b0000_0000u8, 0b0000_0000u8];
+        let ku_zero_bitstring = asn1::BitString::new(&ku_zero_bits, 7).unwrap();
+        let asn1 = asn1::write_single(&ku_zero_bitstring).unwrap();
+
+        let ku: KeyUsage<'_> = asn1::parse_single(&asn1).unwrap();
+        assert!(ku.is_zeroed());
+        assert!(!ku.digital_signature());
+        assert!(!ku.content_commitment());
+        assert!(!ku.key_encipherment());
+        assert!(!ku.data_encipherment());
+        assert!(!ku.key_agreement());
+        assert!(!ku.key_cert_sign());
+        assert!(!ku.crl_sign());
+        assert!(!ku.encipher_only());
+        assert!(!ku.decipher_only());
+    }
 }

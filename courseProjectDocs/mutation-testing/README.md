@@ -1,34 +1,80 @@
 # Mutation Testing Setup and Execution
 
-To run mutation testing using `mutmut` on this project, you must use **Windows Subsystem for Linux (WSL)**. The project relies on OpenSSL and `mutmut` utilizes the POSIX `fork()` mechanism, neither of which are natively available or easy to configure on Windows.
+This directory documents the mutation testing setup for the `cryptography` project, covering both **Python** (`mutmut`) and **Rust** (`cargo-mutants`).
 
-## 1. Use WSL
+To run mutation testing on Windows, use **Windows Subsystem for Linux (WSL)** because the project's native build tools, OpenSSL linkages, and mutation test runners rely on POSIX process isolation and native C/Rust tooling.
 
-## 2. Using the Automated Scripts
+---
 
-We have provided two bash scripts to automatically provision the WSL environment, install Rust/OpenSSL, and execute the mutation tests securely without polluting your Windows environment.
+## Part 1: Rust Mutation Testing (`cargo-mutants`)
 
-### Setup Environment
+### 1. Rust Overview
 
-Run the setup script inside WSL. It will ask for your `sudo` password to install system dependencies (like `pkg-config`, `libssl-dev`), create a Linux-native virtual environment (`.venv-wsl`), install all testing packages, and compile the Rust extensions.
+- **Tool**: [`cargo-mutants`](https://mutants.rs/) (v27.1.0)
+- **Target Component**: `cryptography-x509` crate (`src/rust/cryptography-x509/src/extensions.rs`)
+- **Report & Output Directory**: `mutants.out/` (generated during run: `outcomes.json`, `caught.txt`, `missed.txt`, `diff/`)
 
-```bash
-bash courseProjectDocs/mutation-testing/setup-mutmut-wsl.sh
-```
+### 2. Rust Automated Scripts
 
-### Run Mutation Tests
+1. **Setup `cargo-mutants`**:
 
-Once setup is complete, use the run script to automatically clear old caches and execute `mutmut run`. It reads from our updated `setup.cfg` configuration file automatically.
+   ```bash
+   bash courseProjectDocs/mutation-testing/setup-cargo-mutants-wsl.sh
+   ```
 
-```bash
-bash courseProjectDocs/mutation-testing/run-mutmut-wsl.sh
-```
+   This downloads and installs the prebuilt Linux binary for `cargo-mutants` into `~/.cargo/bin`.
 
-## 3. Investigating Results
+2. **Run Rust Mutation Testing**:
 
-The run script will output the results at the end. To see the diff for a specific surviving mutant (e.g., mutant #5), activate the environment and use `mutmut show`:
+   ```bash
+   bash courseProjectDocs/mutation-testing/run-cargo-mutants-wsl.sh
+   ```
 
-```bash
-source .venv-wsl/bin/activate
-mutmut show cryptography.utils.x_int_to_bytes__mutmut_5
-```
+   This clears old results and executes:
+
+   ```bash
+   cargo mutants --package cryptography-x509 --file src/rust/cryptography-x509/src/extensions.rs
+   ```
+
+3. **Inspect Mutants and Diffs**:
+   The outcomes, logs, and exact diffs for each mutant are stored under `mutants.out/`:
+
+   ```bash
+   cat mutants.out/caught.txt
+   cat mutants.out/missed.txt
+   ls mutants.out/diff/
+   ```
+
+---
+
+## Part 2: Python Mutation Testing (`mutmut`)
+
+### 1. Python Overview
+
+- **Tool**: `mutmut` (v3.8.0)
+- **Target Component**: `src/cryptography/utils.py`
+- **Configuration**: [`setup.cfg`](../../setup.cfg) under `[mutmut]` section.
+
+### 2. Python Automated Scripts
+
+1. **Setup Python Environment & Dependencies**:
+
+   ```bash
+   bash courseProjectDocs/mutation-testing/setup-mutmut-wsl.sh
+   ```
+
+   Provisions `.venv-wsl`, installs project build requirements, dependencies, and compiles the Rust extension via `maturin develop`.
+
+2. **Run Python Mutation Tests**:
+
+   ```bash
+   bash courseProjectDocs/mutation-testing/run-mutmut-wsl.sh
+   ```
+
+3. **Inspect Python Mutants**:
+
+   ```bash
+   source .venv-wsl/bin/activate
+   mutmut show <mutant-name>
+   # e.g.: mutmut show cryptography.utils.x_int_to_bytes__mutmut_5
+   ```
