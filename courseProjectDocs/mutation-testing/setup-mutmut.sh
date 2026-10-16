@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "=== Cryptography Mutmut WSL Setup ==="
+echo "=== Cryptography Mutmut Setup ==="
 if command -v apt-get &> /dev/null; then
     echo "Updating apt and installing native dependencies (OpenSSL, Rust, Python dev headers)..."
     sudo apt update
@@ -11,11 +11,11 @@ elif command -v dnf &> /dev/null; then
     echo "  sudo dnf install -y openssl-devel pkgconf-pkg-config rust cargo python3-devel"
 fi
 
-echo "Creating isolated WSL virtual environment (.venv-wsl)..."
-python3 -m venv .venv-wsl
+echo "Creating isolated virtual environment (.venv)..."
+python3 -m venv .venv
 
 echo "Activating virtual environment..."
-source .venv-wsl/bin/activate
+source .venv/bin/activate
 
 echo "Installing pip and uv..."
 pip install -U pip uv
@@ -31,5 +31,5 @@ echo "Building Rust bindings via maturin..."
 maturin develop
 
 echo "=== Setup Complete ==="
-echo "You can now run: bash courseProjectDocs/mutation-testing/run-mutmut-wsl.sh"
+echo "You can now run: bash courseProjectDocs/mutation-testing/run-mutmut.sh"
 
