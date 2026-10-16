@@ -2,9 +2,14 @@
 set -e
 
 echo "=== Cryptography Mutmut WSL Setup ==="
-echo "Updating apt and installing native dependencies (OpenSSL, Rust, Python dev headers)..."
-sudo apt update
-sudo apt install -y python3-venv python3-pip python3-dev libssl-dev pkg-config cargo rustc python3-maturin
+if command -v apt-get &> /dev/null; then
+    echo "Updating apt and installing native dependencies (OpenSSL, Rust, Python dev headers)..."
+    sudo apt update
+    sudo apt install -y python3-venv python3-pip python3-dev libssl-dev pkg-config cargo rustc python3-maturin
+elif command -v dnf &> /dev/null; then
+    echo "Detected dnf (Fedora/RHEL). Ensure openssl-devel, pkgconf-pkg-config, rust, cargo, python3-devel, maturin are installed:"
+    echo "  sudo dnf install -y openssl-devel pkgconf-pkg-config rust cargo python3-devel"
+fi
 
 echo "Creating isolated WSL virtual environment (.venv-wsl)..."
 python3 -m venv .venv-wsl
