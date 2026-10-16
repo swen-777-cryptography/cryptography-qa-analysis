@@ -3,10 +3,14 @@
 # for complete details.
 
 
+import array
 import binascii
 import inspect
 import os
+import sys
 import textwrap
+import types
+import warnings
 
 import pretend
 import pytest
@@ -54,11 +58,46 @@ def test_int_to_bytes_correctness():
     assert cryptography.utils.int_to_bytes(1, 2) == b"\x00\x01"
 
 
+def test_int_to_bytes_explicit_big_endian():
+    class StrictBigEndianInt(int):
+        def to_bytes(self, *args, **kwargs):
+            if len(args) < 2 or args[1] != "big":
+                raise ValueError("explicit 'big' byteorder required")
+            return super().to_bytes(*args, **kwargs)
+
+    assert cryptography.utils.int_to_bytes(StrictBigEndianInt(1)) == b"\x01"
+    assert (
+        cryptography.utils.int_to_bytes(StrictBigEndianInt(256), 2)
+        == b"\x01\x00"
+    )
+
+
+def test_check_bytes():
+    cryptography.utils._check_bytes("test_bytes", b"valid")
+    with pytest.raises(TypeError, match=r"^test_bytes must be bytes$"):
+        cryptography.utils._check_bytes("test_bytes", "invalid_str")  # type: ignore[arg-type]
+    with pytest.raises(TypeError, match=r"^other_name must be bytes$"):
+        cryptography.utils._check_bytes("other_name", 123)  # type: ignore[arg-type]
+
+
+def test_check_byteslike():
+    cryptography.utils._check_byteslike("buf", b"bytes")
+    cryptography.utils._check_byteslike("buf", bytearray(b"bytearray"))
+    cryptography.utils._check_byteslike("buf", memoryview(b"memview"))
+    arr = array.array("B", b"array_buffer")
+    cryptography.utils._check_byteslike("buf", arr)  # type: ignore[arg-type]
+
+    with pytest.raises(TypeError, match=r"^buf must be bytes-like$"):
+        cryptography.utils._check_byteslike("buf", "not_buffer")  # type: ignore[arg-type]
+    with pytest.raises(TypeError, match=r"^other must be bytes-like$"):
+        cryptography.utils._check_byteslike("other", 12345)  # type: ignore[arg-type]
+
+
 def test_check_backend_support_skip():
     supported = pretend.stub(
-        kwargs={"only_if": lambda backend: False, "skip_message": "Nope"}
+        kwargs={"only_if": lambda _: False, "skip_message": "Nope"}
     )
-    node = pretend.stub(iter_markers=lambda x: [supported])
+    node = pretend.stub(iter_markers=lambda _: [supported])
     item = pretend.stub(node=node)
     with pytest.raises(pytest.skip.Exception) as exc_info:
         check_backend_support(True, item)
@@ -67,9 +106,9 @@ def test_check_backend_support_skip():
 
 def test_check_backend_support_no_skip():
     supported = pretend.stub(
-        kwargs={"only_if": lambda backend: True, "skip_message": "Nope"}
+        kwargs={"only_if": lambda _: True, "skip_message": "Nope"}
     )
-    node = pretend.stub(iter_markers=lambda x: [supported])
+    node = pretend.stub(iter_markers=lambda _: [supported])
     item = pretend.stub(node=node)
     assert check_backend_support(None, item) is None
 
@@ -4485,3 +4524,157 @@ class TestDeprecated:
         source_file = inspect.getsourcefile(deprecated_module)
         assert isinstance(source_file, str)
         assert source_file.endswith("deprecated_module.py")
+
+    def test_deprecated_value(self):
+        dv = cryptography.utils._DeprecatedValue(
+            "val", "warning_msg", DeprecationWarning
+        )
+        assert dv.value == "val"
+        assert dv.message == "warning_msg"
+        assert dv.warning_class is DeprecationWarning
+
+    def test_module_with_deprecations_init(self):
+        mod = types.ModuleType("custom_mod")
+        wrapped = cryptography.utils._ModuleWithDeprecations(mod)
+        assert wrapped.__name__ == "custom_mod"
+        assert wrapped._module is mod
+        assert wrapped.__dict__["_module"] is mod
+        assert "XX_moduleXX" not in wrapped.__dict__
+        assert "_MODULE" not in wrapped.__dict__
+
+    def test_module_with_deprecations_getattr_warning_details(
+        self, monkeypatch
+    ):
+        mod = types.ModuleType("dummy_getattr")
+        wrapped = cryptography.utils._ModuleWithDeprecations(mod)
+        dv = cryptography.utils._DeprecatedValue(
+            42, "msg_getattr", DeprecationWarning
+        )
+        setattr(mod, "DEP", dv)
+
+        warn_calls = []
+        monkeypatch.setattr(
+            warnings,
+            "warn",
+            lambda *args, **kwargs: warn_calls.append((args, kwargs)),
+        )
+
+        val = wrapped.DEP
+        assert val == 42
+        assert len(warn_calls) == 1
+        args, kwargs = warn_calls[0]
+        assert args == ("msg_getattr", DeprecationWarning)
+        assert kwargs == {"stacklevel": 2}
+
+    def test_module_with_deprecations_delattr(self, monkeypatch):
+        mod = types.ModuleType("dummy_delattr")
+        wrapped = cryptography.utils._ModuleWithDeprecations(mod)
+
+        # Deleting a deprecated attribute emits warning with exact details
+        dv = cryptography.utils._DeprecatedValue(
+            99, "del_dep_msg", DeprecationWarning
+        )
+        setattr(mod, "DEP_ATTR", dv)
+        assert hasattr(mod, "DEP_ATTR")
+
+        warn_calls = []
+        monkeypatch.setattr(
+            warnings,
+            "warn",
+            lambda *args, **kwargs: warn_calls.append((args, kwargs)),
+        )
+
+        del wrapped.DEP_ATTR
+        assert len(warn_calls) == 1
+        args, kwargs = warn_calls[0]
+        assert args == ("del_dep_msg", DeprecationWarning)
+        assert kwargs == {"stacklevel": 2}
+        assert not hasattr(mod, "DEP_ATTR")
+        assert not hasattr(wrapped, "DEP_ATTR")
+        assert "DEP_ATTR" not in wrapped.__dict__
+
+        # Deleting a normal attribute that was cached in wrapped.__dict__
+        setattr(mod, "CACHED", "cached_val")
+        assert wrapped.CACHED == "cached_val"
+        assert "CACHED" in wrapped.__dict__
+        del wrapped.CACHED
+        assert "CACHED" not in wrapped.__dict__
+        assert not hasattr(mod, "CACHED")
+        assert not hasattr(wrapped, "CACHED")
+
+        # Deleting a normal attribute that was NOT in wrapped.__dict__
+        setattr(mod, "UNCACHED", "uncached_val")
+        assert "UNCACHED" not in wrapped.__dict__
+        del wrapped.UNCACHED
+        assert not hasattr(mod, "UNCACHED")
+        assert not hasattr(wrapped, "UNCACHED")
+
+        # Deleting a non-existent attribute raises AttributeError
+        with pytest.raises(AttributeError):
+            del wrapped.NON_EXISTENT
+
+    def test_module_with_deprecations_dir(self):
+        mod = types.ModuleType("dummy_dir")
+        setattr(mod, "custom_attr", 10)
+        wrapped = cryptography.utils._ModuleWithDeprecations(mod)
+        assert wrapped.__dir__() == ["_module", *dir(mod)]
+        assert dir(wrapped) == sorted(["_module", *dir(mod)])
+        assert "XX_moduleXX" not in dir(wrapped)
+        assert "_MODULE" not in dir(wrapped)
+
+    def test_deprecated_function(self, monkeypatch):
+        mod_name = "test_custom_deprecated_mod"
+        mod = types.ModuleType(mod_name)
+        monkeypatch.setitem(sys.modules, mod_name, mod)
+
+        # First call wraps module into _ModuleWithDeprecations and registers
+        # deprecated attr
+        dv = cryptography.utils.deprecated(
+            value=123,
+            module_name=mod_name,
+            message="123 is deprecated",
+            warning_class=DeprecationWarning,
+            name="OLD_ATTR",
+        )
+        assert isinstance(dv, cryptography.utils._DeprecatedValue)
+        assert dv.value == 123
+        assert dv.message == "123 is deprecated"
+        assert dv.warning_class is DeprecationWarning
+
+        wrapped = sys.modules[mod_name]
+        assert isinstance(wrapped, cryptography.utils._ModuleWithDeprecations)
+        assert wrapped._module is mod
+        assert getattr(mod, "OLD_ATTR") is dv
+
+        with pytest.warns(DeprecationWarning, match=r"^123 is deprecated$"):
+            assert wrapped.OLD_ATTR == 123
+
+        # Second call on the SAME module should NOT re-wrap
+        dv2 = cryptography.utils.deprecated(
+            value=456,
+            module_name=mod_name,
+            message="456 is deprecated",
+            warning_class=UserWarning,
+            name="ANOTHER_ATTR",
+        )
+        assert sys.modules[mod_name] is wrapped
+        assert getattr(mod, "ANOTHER_ATTR") is dv2
+        with pytest.warns(UserWarning, match=r"^456 is deprecated$"):
+            assert wrapped.ANOTHER_ATTR == 456
+
+        # Call with name=None maintains backwards compatibility with pyOpenSSL
+        mod_name_none = "test_custom_deprecated_mod_none"
+        mod_none = types.ModuleType(mod_name_none)
+        monkeypatch.setitem(sys.modules, mod_name_none, mod_none)
+
+        dv_none = cryptography.utils.deprecated(
+            value=789,
+            module_name=mod_name_none,
+            message="789 is deprecated",
+            warning_class=DeprecationWarning,
+            name=None,
+        )
+        assert isinstance(dv_none, cryptography.utils._DeprecatedValue)
+        assert dv_none.value == 789
+        assert not hasattr(mod_none, "None")
+        assert not hasattr(sys.modules[mod_name_none], "None")
