@@ -1,169 +1,298 @@
-# Mutation Testing Report
+# Python Mutation Testing Report (`mutmut`)
 
-## 1. Existing or Newly Added Mutation Testing Setup
+## 1. Overview & Setup
 
-The `cryptography` repository is a hybrid Python and Rust project. Neither Python nor Rust originally had mutation testing tools configured. To satisfy the assignment deliverables we configured setups for both the Rust and Python halves of the repository:
-
-### Rust Setup: `cargo-mutants`
-
-- **Tool**: `cargo-mutants` (v27.1.0)
-- **Target Component / File**: `cryptography-x509` crate (`src/rust/cryptography-x509/src/extensions.rs`)
-- **Execution Environment**: Windows Subsystem for Linux (WSL)
-- **Run Command**:
-
-  ```bash
-  cargo mutants --package cryptography-x509 --file src/rust/cryptography-x509/src/extensions.rs
-  ```
-
-- **Report Location**: Output directory `mutants.out/` (`outcomes.json`, `caught.txt`, `missed.txt`, `unviable.txt`, diff files)
-
-### Python Setup: `mutmut`
-
-- **Tool**: `mutmut` (v3.8.0)
-- **Target Component / File**: `src/cryptography/utils.py`
-- **Configuration File**: [`setup.cfg`](../../setup.cfg) under `[mutmut]` section:
-
-  ```ini
-  [mutmut]
-  source_paths=src/cryptography/utils.py
-  pytest_add_cli_args_test_selection=tests/test_utils.py
-  also_copy=src/
-  debug=true
-  process_isolation=forkserver
-  timeout_constant=10.0
-  ```
-
-- **Report Location**: Standard output and `.mutmut-cache` / `mutants/` directory via `mutmut results` and `mutmut show <mutant_name>`.
+Mutation testing was conducted on the Python components of the `cryptography` library using `mutmut`. Because of the project's scale, mutation testing was targeted on the core utility module:
+- **Target Source File**: [`src/cryptography/utils.py`](../../src/cryptography/utils.py)
+- **Target Test File**: [`tests/test_utils.py`](../../tests/test_utils.py)
 
 ---
 
-## 2. Initial Mutation Scores
+## 2. Initial Mutation Score
 
-### Rust Initial Score (`cargo-mutants` on `src/rust/cryptography-x509/src/extensions.rs`)
-
-- **Total Mutants Generated**: 38
-- **Unviable Mutants** (failed to build or syntax-invalid): 12
-- **Viable Mutants Evaluated**: 26
-- **Mutants Caught (Killed)**: 16
-- **Mutants Missed (Survived)**: 10
-- **Initial Mutation Score**: **61.5%** (16 caught / 26 viable mutants)
-
-#### Rust Surviving Mutants Analysis
-
-All 10 surviving mutants were localized to boolean accessor methods on `KeyUsage` in `src/rust/cryptography-x509/src/extensions.rs`:
-
-```rust
-KeyUsage<'_>::is_zeroed -> bool with false
-KeyUsage<'_>::digital_signature -> bool with true
-KeyUsage<'_>::content_commitment -> bool with true
-KeyUsage<'_>::key_encipherment -> bool with true
-KeyUsage<'_>::data_encipherment -> bool with true
-KeyUsage<'_>::key_agreement -> bool with true
-KeyUsage<'_>::key_cert_sign -> bool with true
-KeyUsage<'_>::crl_sign -> bool with true
-KeyUsage<'_>::encipher_only -> bool with true
-KeyUsage<'_>::decipher_only -> bool with true
-```
-
-*Root Cause*: The existing unit test (`test_keyusage`) only instantiated a `KeyUsage` bitstring with all bits set (`0b1111_1111`, `0b1000_0000`) and only asserted that each method returned `true` (and `is_zeroed()` returned `false`). Consequently, when mutants replaced these methods to always return `true` (or `false` for `is_zeroed`), the test suite still passed.
-
-### Python Initial Score (`mutmut` on `src/cryptography/utils.py`)
+Upon running `mutmut run` on `src/cryptography/utils.py` against the initial test suite, a substantial number of mutants either survived or were completely untested:
 
 - **Total Mutants Generated**: 83
-- **Untested**: 26
-- **Mutants Caught (Killed)**: 43 (7 failed tests, 36 timed out)
-- **Mutants Survived**: 14 (primarily in `int_to_bytes`)
-- **Initial Mutation Score**: **75.4%** (43 / (83 - 26))
+- **Mutants Killed (Caught)**: 28
+- **Mutants Survived (Missed)**: 29
+- **Untested Mutants (No Tests)**: 26
+- **Initial Mutation Score**:
+  - **33.7%** overall (28 killed / 83 total generated)
+  - **49.1%** covered (28 killed / 57 covered mutants)
 
 ---
 
-## 3. Newly Added Tests
+## 3. Analysis of Surviving & Untested Mutants
 
-### Rust Test Added
+Analysis of the 55 non-killed mutants (29 survived + 26 untested) revealed several distinct gaps in test coverage:
 
-- **Targeted Mutants**: 10 surviving mutants across all `KeyUsage` query methods (`is_zeroed`, `digital_signature`, `content_commitment`, etc.).
-- **Test File**: [`src/rust/cryptography-x509/src/extensions.rs`](../../src/rust/cryptography-x509/src/extensions.rs)
-- **Test Code**:
+### A. `int_to_bytes` (1 mutant survived)
+* **Target Mutant**: `cryptography.utils.x_int_to_bytes__mutmut_9`
+* **Mutation**: Removed the `"big"` byteorder parameter from `integer.to_bytes(...)`:
+  ```python
+  - return integer.to_bytes(length or (integer.bit_length() + 7) // 8 or 1, "big")
+  + return integer.to_bytes(length or (integer.bit_length() + 7) // 8 or 1, )
+  ```
+* **Analysis**: In Python 3.11+, `int.to_bytes(length, byteorder="big")` defaults `byteorder` to `"big"`. Passing standard integers caused this mutation to act as an equivalent mutant. To kill this mutant, an `int` subclass that requires an explicit byteorder argument was needed.
 
-```rust
-#[test]
-fn test_keyusage_zeroed_and_unset_bits() {
-    let ku_zero_bits = [0b0000_0000u8, 0b0000_0000u8];
-    let ku_zero_bitstring = asn1::BitString::new(&ku_zero_bits, 7).unwrap();
-    let asn1 = asn1::write_single(&ku_zero_bitstring).unwrap();
+### B. `_check_bytes` (2 mutants untested)
+* **Target Mutants**: `x__check_bytes__mutmut_1`, `mutmut_2`
+* **Mutation**: Inverted check to `if isinstance(value, bytes): raise TypeError` and replaced exception message with `None`.
+* **Analysis**: `_check_bytes` was never called directly by unit tests in `tests/test_utils.py`.
 
-    let ku: KeyUsage<'_> = asn1::parse_single(&asn1).unwrap();
-    assert!(ku.is_zeroed());
-    assert!(!ku.digital_signature());
-    assert!(!ku.content_commitment());
-    assert!(!ku.key_encipherment());
-    assert!(!ku.data_encipherment());
-    assert!(!ku.key_agreement());
-    assert!(!ku.key_cert_sign());
-    assert!(!ku.crl_sign());
-    assert!(!ku.encipher_only());
-    assert!(!ku.decipher_only());
-}
-```
+### C. `_check_byteslike` (2 mutants untested)
+* **Target Mutants**: `x__check_byteslike__mutmut_1`, `mutmut_2`
+* **Mutation**: Mutated `memoryview(value)` to `memoryview(None)` and exception message to `None`.
+* **Analysis**: `_check_byteslike` was never directly tested, especially with buffer-protocol objects that are not `(bytes, bytearray, memoryview)` (such as `array.array`), which are required to exercise the fallback `try: memoryview(value)` branch.
 
-*Analysis*: By creating a `KeyUsage` instance with zeroed/unset bits, we asserted that `is_zeroed()` returns `true` and every key flag returns `false`. Any mutation altering the boolean logic to `true` or breaking `is_zeroed()` immediately fails the test.
+### D. `_DeprecatedValue` (3 mutants survived)
+* **Target Mutants**: `xǁ_DeprecatedValueǁ__init____mutmut_1` to `mutmut_3`
+* **Mutation**: Nullified attributes upon initialization (`self.value = None`, `self.message = None`, `self.warning_class = None`).
+* **Analysis**: The fields were never directly verified after instantiation.
 
-### Python Test Added
+### E. `_ModuleWithDeprecations` (29 mutants survived / untested)
+* **`__init__` (4 mutants survived)**: `super().__init__(None)` and dictionary corruption (`self.__dict__["_module"] = None`, `"XX_moduleXX"`, `"_MODULE"`). `__name__` and `_module` attributes were never asserted.
+* **`__getattr__` (3 mutants survived)**: Emitted `None` as warning message (`mutmut_6`), omitted `stacklevel=2` (`mutmut_11`), or changed to `stacklevel=3` (`mutmut_12`). The existing test only used `pytest.warns(DeprecationWarning)` without verifying message string or caller stacklevel attribution.
+* **`__delattr__` (19 mutants untested)**: Entire method lacked test coverage. Mutants corrupted `getattr()`, stripped `warnings.warn` parameters, omitted the default fallback parameter in `self.__dict__.pop(attr, None)` (which causes `KeyError` on uncached attributes), and corrupted `delattr()`.
+* **`__dir__` (3 mutants untested)**: Mutated `"_module"` to `"XX_moduleXX"`, `"_MODULE"`, or `dir(None)`. The `dir()` representation of wrapped modules was never tested.
 
-- **Targeted Mutants**: `cryptography.utils.x_int_to_bytes__mutmut_16` and related `int_to_bytes` mutants.
-- **Test File**: [`tests/test_utils.py`](../../tests/test_utils.py)
-- **Test Code**:
+### F. `deprecated()` Function (18 mutants survived)
+* **Target Mutants**: `x_deprecated__mutmut_1` to `mutmut_18`
+* **Mutation**: Bypassed module wrapping checks, corrupted module dictionary updates, dropped `_DeprecatedValue` arguments, and inverted `if name is not None:`.
+* **Analysis**: `deprecated()` was only executed at module import time inside `tests/deprecated_module.py`. Because it was never called dynamically within test cases, mutmut could not isolate tests to verify module wrapping, re-wrapping prevention, or backwards compatibility with `name=None`.
 
+---
+
+## 4. Newly Added Tests
+
+All new tests were added to [`tests/test_utils.py`](../../tests/test_utils.py):
+
+### 1. Enforcing Explicit Big-Endian Byte Order
+Kills `x_int_to_bytes__mutmut_9`:
 ```python
-def test_int_to_bytes_correctness():
-    assert cryptography.utils.int_to_bytes(0) == b"\x00"
-    assert cryptography.utils.int_to_bytes(1) == b"\x01"
-    assert cryptography.utils.int_to_bytes(255) == b"\xff"
-    assert cryptography.utils.int_to_bytes(256) == b"\x01\x00"
-    assert cryptography.utils.int_to_bytes(1, 2) == b"\x00\x01"
+def test_int_to_bytes_explicit_big_endian():
+    class StrictBigEndianInt(int):
+        def to_bytes(self, *args, **kwargs):
+            if len(args) < 2 or args[1] != "big":
+                raise ValueError("explicit 'big' byteorder required")
+            return super().to_bytes(*args, **kwargs)
+
+    assert cryptography.utils.int_to_bytes(StrictBigEndianInt(1)) == b"\x01"
+    assert (
+        cryptography.utils.int_to_bytes(StrictBigEndianInt(256), 2)
+        == b"\x01\x00"
+    )
 ```
 
-*Analysis*: Previously, `int_to_bytes` was only tested for raising a `ValueError` on length `0`. Adding tests for exact byte values killed all surviving numerical and bit-length mutants.
+### 2. Validating `_check_bytes` and `_check_byteslike`
+Kills `_check_bytes` mutants 1–2 and `_check_byteslike` mutants 1–2:
+```python
+def test_check_bytes():
+    cryptography.utils._check_bytes("test_bytes", b"valid")
+    with pytest.raises(TypeError, match=r"^test_bytes must be bytes$"):
+        cryptography.utils._check_bytes("test_bytes", "invalid_str")  # type: ignore[arg-type]
+    with pytest.raises(TypeError, match=r"^other_name must be bytes$"):
+        cryptography.utils._check_bytes("other_name", 123)  # type: ignore[arg-type]
+
+
+def test_check_byteslike():
+    cryptography.utils._check_byteslike("buf", b"bytes")
+    cryptography.utils._check_byteslike("buf", bytearray(b"bytearray"))
+    cryptography.utils._check_byteslike("buf", memoryview(b"memview"))
+    # array.array supports the buffer protocol but is not bytes,
+    # bytearray, or memoryview
+    arr = array.array("B", b"array_buffer")
+    cryptography.utils._check_byteslike("buf", arr)  # type: ignore[arg-type]
+
+    with pytest.raises(TypeError, match=r"^buf must be bytes-like$"):
+        cryptography.utils._check_byteslike("buf", "not_buffer")  # type: ignore[arg-type]
+    with pytest.raises(TypeError, match=r"^other must be bytes-like$"):
+        cryptography.utils._check_byteslike("other", 12345)  # type: ignore[arg-type]
+```
+
+### 3. Testing `_DeprecatedValue` Initialization
+Kills `_DeprecatedValue` mutants 1–3:
+```python
+def test_deprecated_value(self):
+    dv = cryptography.utils._DeprecatedValue(
+        "val", "warning_msg", DeprecationWarning
+    )
+    assert dv.value == "val"
+    assert dv.message == "warning_msg"
+    assert dv.warning_class is DeprecationWarning
+```
+
+### 4. Testing `_ModuleWithDeprecations` Behavior
+Kills `_ModuleWithDeprecations` mutants across `__init__`, `__getattr__`, `__delattr__`, and `__dir__`:
+```python
+def test_module_with_deprecations_init(self):
+    mod = types.ModuleType("custom_mod")
+    wrapped = cryptography.utils._ModuleWithDeprecations(mod)
+    assert wrapped.__name__ == "custom_mod"
+    assert wrapped._module is mod
+    assert wrapped.__dict__["_module"] is mod
+    assert "XX_moduleXX" not in wrapped.__dict__
+    assert "_MODULE" not in wrapped.__dict__
+
+
+def test_module_with_deprecations_getattr_warning_details(
+    self, monkeypatch
+):
+    mod = types.ModuleType("dummy_getattr")
+    wrapped = cryptography.utils._ModuleWithDeprecations(mod)
+    dv = cryptography.utils._DeprecatedValue(
+        42, "msg_getattr", DeprecationWarning
+    )
+    setattr(mod, "DEP", dv)
+
+    warn_calls = []
+    monkeypatch.setattr(
+        warnings,
+        "warn",
+        lambda *args, **kwargs: warn_calls.append((args, kwargs)),
+    )
+
+    val = wrapped.DEP
+    assert val == 42
+    assert len(warn_calls) == 1
+    args, kwargs = warn_calls[0]
+    assert args == ("msg_getattr", DeprecationWarning)
+    assert kwargs == {"stacklevel": 2}
+
+
+def test_module_with_deprecations_delattr(self, monkeypatch):
+    mod = types.ModuleType("dummy_delattr")
+    wrapped = cryptography.utils._ModuleWithDeprecations(mod)
+
+    # 1. Deleting a deprecated attribute emits warning with exact details
+    dv = cryptography.utils._DeprecatedValue(
+        99, "del_dep_msg", DeprecationWarning
+    )
+    setattr(mod, "DEP_ATTR", dv)
+    assert hasattr(mod, "DEP_ATTR")
+
+    warn_calls = []
+    monkeypatch.setattr(
+        warnings,
+        "warn",
+        lambda *args, **kwargs: warn_calls.append((args, kwargs)),
+    )
+
+    del wrapped.DEP_ATTR
+    assert len(warn_calls) == 1
+    args, kwargs = warn_calls[0]
+    assert args == ("del_dep_msg", DeprecationWarning)
+    assert kwargs == {"stacklevel": 2}
+    assert not hasattr(mod, "DEP_ATTR")
+    assert not hasattr(wrapped, "DEP_ATTR")
+    assert "DEP_ATTR" not in wrapped.__dict__
+
+    # 2. Deleting a normal attribute that was cached in wrapped.__dict__
+    setattr(mod, "CACHED", "cached_val")
+    assert wrapped.CACHED == "cached_val"
+    assert "CACHED" in wrapped.__dict__
+    del wrapped.CACHED
+    assert "CACHED" not in wrapped.__dict__
+    assert not hasattr(mod, "CACHED")
+    assert not hasattr(wrapped, "CACHED")
+
+    # 3. Deleting a normal attribute that was NOT in wrapped.__dict__
+    setattr(mod, "UNCACHED", "uncached_val")
+    assert "UNCACHED" not in wrapped.__dict__
+    del wrapped.UNCACHED
+    assert not hasattr(mod, "UNCACHED")
+    assert not hasattr(wrapped, "UNCACHED")
+
+    # 4. Deleting a non-existent attribute raises AttributeError
+    with pytest.raises(AttributeError):
+        del wrapped.NON_EXISTENT
+
+
+def test_module_with_deprecations_dir(self):
+    mod = types.ModuleType("dummy_dir")
+    setattr(mod, "custom_attr", 10)
+    wrapped = cryptography.utils._ModuleWithDeprecations(mod)
+    assert wrapped.__dir__() == ["_module", *dir(mod)]
+    assert dir(wrapped) == sorted(["_module", *dir(mod)])
+    assert "XX_moduleXX" not in dir(wrapped)
+    assert "_MODULE" not in dir(wrapped)
+```
+
+### 5. Testing the `deprecated()` Function Directly
+Kills all 18 `deprecated()` mutants:
+```python
+def test_deprecated_function(self, monkeypatch):
+    mod_name = "test_custom_deprecated_mod"
+    mod = types.ModuleType(mod_name)
+    monkeypatch.setitem(sys.modules, mod_name, mod)
+
+    # First call wraps module into _ModuleWithDeprecations and registers
+    # deprecated attr
+    dv = cryptography.utils.deprecated(
+        value=123,
+        module_name=mod_name,
+        message="123 is deprecated",
+        warning_class=DeprecationWarning,
+        name="OLD_ATTR",
+    )
+    assert isinstance(dv, cryptography.utils._DeprecatedValue)
+    assert dv.value == 123
+    assert dv.message == "123 is deprecated"
+    assert dv.warning_class is DeprecationWarning
+
+    wrapped = sys.modules[mod_name]
+    assert isinstance(wrapped, cryptography.utils._ModuleWithDeprecations)
+    assert wrapped._module is mod
+    assert getattr(mod, "OLD_ATTR") is dv
+
+    with pytest.warns(DeprecationWarning, match=r"^123 is deprecated$"):
+        assert wrapped.OLD_ATTR == 123
+
+    # Second call on the SAME module should NOT re-wrap
+    dv2 = cryptography.utils.deprecated(
+        value=456,
+        module_name=mod_name,
+        message="456 is deprecated",
+        warning_class=UserWarning,
+        name="ANOTHER_ATTR",
+    )
+    assert sys.modules[mod_name] is wrapped
+    assert getattr(mod, "ANOTHER_ATTR") is dv2
+    with pytest.warns(UserWarning, match=r"^456 is deprecated$"):
+        assert wrapped.ANOTHER_ATTR == 456
+
+    # Call with name=None maintains backwards compatibility with pyOpenSSL
+    mod_name_none = "test_custom_deprecated_mod_none"
+    mod_none = types.ModuleType(mod_name_none)
+    monkeypatch.setitem(sys.modules, mod_name_none, mod_none)
+
+    dv_none = cryptography.utils.deprecated(
+        value=789,
+        module_name=mod_name_none,
+        message="789 is deprecated",
+        warning_class=DeprecationWarning,
+        name=None,
+    )
+    assert isinstance(dv_none, cryptography.utils._DeprecatedValue)
+    assert dv_none.value == 789
+    assert not hasattr(mod_none, "None")
+    assert not hasattr(sys.modules[mod_name_none], "None")
+```
 
 ---
 
-## 4. Final Mutation Scores
+## 5. Final Mutation Score & Results Comparison
 
-### Rust Final Score (`cargo-mutants`)
+Re-running `courseProjectDocs/mutation-testing/run-mutmut-wsl.sh` after introducing the new tests killed every generated mutant:
 
-- **Total Mutants Generated**: 38
-- **Unviable Mutants**: 12
-- **Viable Mutants Evaluated**: 26
-- **Mutants Caught (Killed)**: **26** (+10 increase)
-- **Mutants Missed (Survived)**: **0** (-10 reduction)
-- **Final Mutation Score**: **100.0%** (26 caught / 26 viable mutants)
+### Summary Comparison Table
 
-### Python Final Score (`mutmut`)
+| Metric | Initial Score (`mutmut`) | Final Score (`mutmut`) | Change |
+| :--- | :---: | :---: | :---: |
+| **Total Mutants Generated** | 83 | 83 | — |
+| **Untested Mutants (No Tests)** | 26 | **0** | **-26** |
+| **Mutants Survived** | 29 | **0** | **-29** |
+| **Mutants Caught (Killed)** | 28 | **83** | **+55** |
+| **Mutation Score (Overall)** | **33.7%** (28 / 83) | **100.0%** (83 / 83) | **+66.3%** |
+| **Mutation Score (Covered)** | **49.1%** (28 / 57) | **100.0%** (83 / 83) | **+50.9%** |
 
-- **Total Mutants Generated**: 83
-- **Untested**: 26
-- **Mutants Caught (Killed)**: 28 (clean runs without timeouts)
-- **Mutants Survived**: 29
-- **Final Mutation Score**: **49.1%** (28 / (83 - 26))
-*(Note on Python survivor #9: In Python 3.11+, `integer.to_bytes()` defaults `byteorder="big"`. Mutant #9 removes `"big"`, creating an equivalent mutant whose behavior is identical to the unmutated program).*
-
----
-
-## 5. Summary Comparison
-
-| Metric | Rust Initial | Rust Final | Python Initial | Python Final |
-| :--- | :---: | :---: | :---: | :---: |
-| **Tool** | `cargo-mutants` | `cargo-mutants` | `mutmut` | `mutmut` |
-| **Evaluated Mutants** | 26 | 26 | 57 | 57 |
-| **Caught / Killed** | 16 | **26** | 43 (incl. timeouts) | 28 (clean kills) |
-| **Survived / Missed** | 10 | **0** | 14 | 29* |
-| **Mutation Score** | **61.5%** | **100.0%** | **75.4%** | **49.1%** |
-
----
-
-## 6. Group Contributions
-
-- Configured and executed `cargo-mutants` for the Rust component (`src/rust/cryptography-x509/src/extensions.rs`).
-- Identified and analyzed surviving mutants in `KeyUsage` boolean accessor methods.
-- Authored `test_keyusage_zeroed_and_unset_bits` in Rust, increasing the Rust mutation score from 61.5% to 100.0% (killing all 10 surviving mutants).
-- Provided automated WSL helper scripts (`setup-cargo-mutants-wsl.sh`, `run-cargo-mutants-wsl.sh`) and documented reproduction steps in `README.md`.
