@@ -1,0 +1,19 @@
+# Semgrep ignore configuration
+# Matches paths ignored by CodeQL and SonarQube
+
+# Tests and test vectors
+tests/
+**/tests/
+vectors/
+**/vectors/
+
+# Documentation and reports
+courseProjectDocs/
+docs/
+
+# CI Workflows
+.github/
+
+# Files with static known-answer test vectors triggering false-positive cryptographic alerts
+src/rust/cryptography-crypto/src/pbkdf1.rs
+src/rust/cryptography-crypto/src/pkcs12.rs

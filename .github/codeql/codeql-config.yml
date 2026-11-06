@@ -1,0 +1,12 @@
+name: "CodeQL config"
+
+paths-ignore:
+  - 'tests/**'
+  - '**/tests/**'
+  - 'vectors/**'
+  - '**/vectors/**'
+  - 'courseProjectDocs/**'
+  - 'docs/**'
+  - '.github/**'
+  - 'src/rust/cryptography-crypto/src/pbkdf1.rs'
+  - 'src/rust/cryptography-crypto/src/pkcs12.rs'
