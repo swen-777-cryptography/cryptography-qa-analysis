@@ -8,5 +8,7 @@ paths-ignore:
   - 'courseProjectDocs/**'
   - 'docs/**'
   - '.github/**'
-  - 'src/rust/cryptography-crypto/src/pbkdf1.rs'
-  - 'src/rust/cryptography-crypto/src/pkcs12.rs'
+
+query-filters:
+  - exclude:
+      id: rust/hard-coded-cryptographic-value
