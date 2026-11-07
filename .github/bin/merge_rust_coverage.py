@@ -136,6 +136,7 @@ def main(coverage_loc: str):
     )
     print("Coverage Report")
     coverage_percent = cov.report(show_missing=True)
+    cov.xml_report(outfile="coverage.xml")
     if coverage_percent < 100:
         print("+++ Combined coverage under 100% +++")
         cov.html_report()
