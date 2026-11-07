@@ -26,25 +26,38 @@ def generate_from_html_report(report_dir: pathlib.Path, out_path: pathlib.Path) 
         if not src_path or not html_name:
             continue
 
-        # Only include files that currently exist in the repo so SonarCloud doesn't complain
-        if not pathlib.Path(src_path).exists():
+        # SonarQube generic coverage reports should only cover production source files (under src/)
+        if not src_path.startswith("src/"):
             continue
+
+        target_file = pathlib.Path(src_path)
+        if not target_file.exists():
+            continue
+
+        # Count actual lines in target file to prevent line number > file length parsing errors
+        with target_file.open("r", encoding="utf-8", errors="ignore") as f:
+            total_lines = sum(1 for _ in f)
 
         html_file = report_dir / html_name
         if not html_file.exists():
             continue
 
         html_text = html_file.read_text(encoding="utf-8")
+        seen_lines = set()
         covered_lines = []
         for match in LINE_RE.finditer(html_text):
             classes = match.group(1).split()
             line_num = int(match.group(2))
+            if line_num <= 0 or line_num > total_lines or line_num in seen_lines:
+                continue
+            seen_lines.add(line_num)
             if "run" in classes:
                 covered_lines.append((line_num, True))
             elif "mis" in classes:
                 covered_lines.append((line_num, False))
 
         if covered_lines:
+            covered_lines.sort(key=lambda x: x[0])
             lines_out.append(f'  <file path="{src_path}">')
             for line_num, is_covered in covered_lines:
                 cov_str = "true" if is_covered else "false"
