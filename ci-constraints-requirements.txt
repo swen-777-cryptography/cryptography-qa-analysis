@@ -8,7 +8,7 @@ argcomplete==3.7.0 ; python_full_version < '3.10'
     # via nox
 argcomplete==3.7.2 ; python_full_version >= '3.10'
     # via nox
-ast-serialize==0.11.2 ; python_full_version >= '3.10'
+ast-serialize==0.13.1 ; python_full_version >= '3.10'
     # via mypy
 attrs==26.1.0
     # via nox
@@ -22,11 +22,11 @@ build==1.6.1 ; python_full_version >= '3.10'
     # via
     #   cryptography (pyproject.toml:dev)
     #   check-sdist
-certifi==2026.7.22
+certifi==2026.10.23
     # via
     #   cryptography (pyproject.toml:dev)
     #   requests
-charset-normalizer==3.5.1
+charset-normalizer==3.5.2
     # via requests
 check-sdist==1.6.0
     # via cryptography (pyproject.toml:dev)
@@ -45,11 +45,13 @@ colorlog==6.12.0
     # via nox
 coverage==7.10.7 ; python_full_version < '3.10'
     # via pytest-cov
-coverage==7.16.1 ; python_full_version >= '3.10'
+coverage==7.16.2 ; python_full_version == '3.10.*'
+    # via pytest-cov
+coverage==7.17.0 ; python_full_version >= '3.11'
     # via pytest-cov
 dependency-groups==1.3.2
     # via nox
-distlib==0.4.3
+distlib==0.4.4
     # via virtualenv
 docutils==0.21.2 ; python_full_version < '3.11'
     # via
@@ -69,7 +71,11 @@ filelock==3.19.1 ; python_full_version < '3.10'
     # via
     #   python-discovery
     #   virtualenv
-filelock==3.32.7 ; python_full_version >= '3.10'
+filelock==4.1.0 ; python_full_version == '3.10.*'
+    # via
+    #   python-discovery
+    #   virtualenv
+filelock==4.2.6 ; python_full_version >= '3.11'
     # via
     #   python-discovery
     #   virtualenv
@@ -88,21 +94,21 @@ importlib-metadata==8.7.1 ; python_full_version < '3.10'
     #   build
     #   pytest-randomly
     #   sphinx
-importlib-metadata==9.0.0 ; python_full_version >= '3.10' and python_full_version < '3.10.2'
+importlib-metadata==9.0.1 ; python_full_version >= '3.10' and python_full_version < '3.10.2'
     # via build
 iniconfig==2.1.0 ; python_full_version < '3.10'
     # via pytest
-iniconfig==2.3.0 ; python_full_version >= '3.10'
+iniconfig==2.3.1 ; python_full_version >= '3.10'
     # via pytest
 jinja2==3.1.6
     # via sphinx
-librt==0.15.0 ; platform_python_implementation != 'PyPy'
+librt==0.16.0 ; platform_python_implementation != 'PyPy'
     # via mypy
-markupsafe==3.0.3
+markupsafe==3.0.4
     # via jinja2
 mypy==1.19.1 ; python_full_version < '3.10'
     # via cryptography (pyproject.toml:dev)
-mypy==2.3.1 ; python_full_version >= '3.10'
+mypy==2.4.1 ; python_full_version >= '3.10'
     # via cryptography (pyproject.toml:dev)
 mypy-extensions==1.1.0
     # via mypy
@@ -110,7 +116,7 @@ nh3==0.3.7
     # via readme-renderer
 nox==2026.4.10 ; python_full_version < '3.10'
     # via cryptography (pyproject.toml:dev)
-nox==2026.8.17 ; python_full_version >= '3.10'
+nox==2026.10.20 ; python_full_version >= '3.10'
     # via cryptography (pyproject.toml:dev)
 packaging==26.3
     # via
@@ -119,17 +125,26 @@ packaging==26.3
     #   nox
     #   pytest
     #   sphinx
+    #   virtualenv
 pathspec==1.1.1
     # via
     #   check-sdist
     #   mypy
 platformdirs==4.4.0 ; python_full_version < '3.10'
     # via virtualenv
-platformdirs==4.11.10 ; python_full_version >= '3.10'
+platformdirs==4.12.4 ; python_full_version == '3.10.*'
     # via
     #   nox
     #   virtualenv
-pluggy==1.6.0
+platformdirs==4.14.3 ; python_full_version >= '3.11'
+    # via
+    #   nox
+    #   virtualenv
+pluggy==1.6.0 ; python_full_version < '3.10'
+    # via
+    #   pytest
+    #   pytest-cov
+pluggy==1.7.0 ; python_full_version >= '3.10'
     # via
     #   pytest
     #   pytest-cov
@@ -157,7 +172,7 @@ pytest==8.4.2 ; python_full_version < '3.10'
     #   pytest-cov
     #   pytest-randomly
     #   pytest-xdist
-pytest==9.1.1 ; python_full_version >= '3.10'
+pytest==9.2.0 ; python_full_version >= '3.10'
     # via
     #   cryptography (pyproject.toml:dev)
     #   pytest-benchmark
@@ -166,7 +181,7 @@ pytest==9.1.1 ; python_full_version >= '3.10'
     #   pytest-xdist
 pytest-benchmark==5.2.3 ; python_full_version < '3.10'
     # via cryptography (pyproject.toml:dev)
-pytest-benchmark==5.3.0 ; python_full_version >= '3.10'
+pytest-benchmark==5.3.1 ; python_full_version >= '3.10'
     # via cryptography (pyproject.toml:dev)
 pytest-cov==7.1.0
     # via cryptography (pyproject.toml:dev)
@@ -176,7 +191,7 @@ pytest-randomly==5.0.0 ; python_full_version >= '3.10'
     # via cryptography (pyproject.toml:dev)
 pytest-xdist==3.8.0
     # via cryptography (pyproject.toml:dev)
-python-discovery==1.6.1
+python-discovery==1.9.4
     # via
     #   nox
     #   virtualenv
@@ -192,7 +207,7 @@ requests==2.34.2 ; python_full_version >= '3.10'
     #   sphinxcontrib-spelling
 roman-numerals==4.1.0 ; python_full_version >= '3.11'
     # via sphinx
-ruff==0.16.8
+ruff==0.17.4
     # via cryptography (pyproject.toml:dev)
 snowballstemmer==3.1.1
     # via sphinx
@@ -217,7 +232,14 @@ sphinx==9.0.4 ; python_full_version == '3.11.*'
     #   sphinx-rtd-theme
     #   sphinxcontrib-jquery
     #   sphinxcontrib-spelling
-sphinx==9.1.0 ; python_full_version >= '3.12'
+sphinx==9.1.1 ; python_full_version == '3.12.*'
+    # via
+    #   cryptography (pyproject.toml:dev)
+    #   sphinx-inline-tabs
+    #   sphinx-rtd-theme
+    #   sphinxcontrib-jquery
+    #   sphinxcontrib-spelling
+sphinx==9.2.0 ; python_full_version >= '3.13'
     # via
     #   cryptography (pyproject.toml:dev)
     #   sphinx-inline-tabs
@@ -236,7 +258,7 @@ sphinxcontrib-htmlhelp==2.1.0
     # via sphinx
 sphinxcontrib-jquery==4.1
     # via sphinx-rtd-theme
-sphinxcontrib-jsmath==1.0.1
+sphinxcontrib-jsmath==2.0.0
     # via sphinx
 sphinxcontrib-qthelp==2.0.0
     # via sphinx
@@ -246,7 +268,7 @@ sphinxcontrib-spelling==8.0.0 ; python_full_version < '3.10'
     # via cryptography (pyproject.toml:dev)
 sphinxcontrib-spelling==8.0.2 ; python_full_version >= '3.10'
     # via cryptography (pyproject.toml:dev)
-tomli==2.4.1 ; python_full_version <= '3.11'
+tomli==2.5.0 ; python_full_version < '3.11'
     # via
     #   build
     #   check-sdist
@@ -266,13 +288,13 @@ urllib3==2.6.3 ; python_full_version < '3.10'
     # via requests
 urllib3==2.8.0 ; python_full_version >= '3.10'
     # via requests
-uv==0.12.16
+uv==0.13.7
     # via nox
-virtualenv==21.7.14
+virtualenv==21.15.2
     # via nox
 zipp==3.23.1 ; python_full_version < '3.10'
     # via importlib-metadata
-zipp==4.1.0 ; python_full_version >= '3.10' and python_full_version < '3.10.2'
+zipp==4.1.2 ; python_full_version >= '3.10' and python_full_version < '3.10.2'
     # via importlib-metadata
 
 # The following packages were excluded from the output:
