@@ -123,6 +123,6 @@ def test_short_stream():
     eval_cobblestone_on_stream("integration_testing/example_short.txt", [56, 237])
 
 def test_long_stream():
-    """ensures correct behavior for a longer (~98kb) example"""
+    """ensures correct behavior for a longer (~90kb) example"""
     chunk_lengths = [56, 16400, 16400, 16400, 16400, 16400, 9442]
     eval_cobblestone_on_stream("integration_testing/example_short.txt", chunk_lengths)
