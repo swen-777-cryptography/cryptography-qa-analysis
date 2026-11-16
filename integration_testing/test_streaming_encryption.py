@@ -53,6 +53,7 @@ def ensure_encrypted(file_contents: str, read_queue: Queue, expected_chunks: lis
         if packet == b"":
             break
         assert len(packet) == expected_chunks[i]
+        i += 1
         total += packet
         try:
             cut_file = file_contents.replace(packet.decode(), "")
@@ -125,4 +126,4 @@ def test_short_stream():
 def test_long_stream():
     """ensures correct behavior for a longer (~90kb) example"""
     chunk_lengths = [56, 16400, 16400, 16400, 16400, 16400, 9442]
-    eval_cobblestone_on_stream("integration_testing/example_short.txt", chunk_lengths)
+    eval_cobblestone_on_stream("integration_testing/example_data.txt", chunk_lengths)
