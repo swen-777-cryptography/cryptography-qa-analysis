@@ -45,18 +45,14 @@ def encode(file_lines: list[str], transmit_queue: Queue):
         transmit_queue.put(line)
     transmit_queue.put(b"")
 
-def ensure_encrypted(file_contents: str, read_queue: Queue):
+def ensure_encrypted(file_contents: str, read_queue: Queue, expected_chunks: list[int]):
     total = b""
     i = 0
     while True:
         packet = read_queue.get()
         if packet == b"":
             break
-        if i == 0:
-            assert len(packet) == 56 # the first packet is a metadata header
-        else:
-            assert len(packet) <= 16400 # subsequent packets are 16k chunks
-        i += 1
+        assert len(packet) == expected_chunks[i]
         total += packet
         try:
             cut_file = file_contents.replace(packet.decode(), "")
@@ -87,7 +83,7 @@ def decode_eval(file_contents: str, read_queue: Queue, output_queue: Queue | Non
         output_queue.put(string)
     assert(string == file_contents)
 
-def main():
+def eval_cobblestone_on_stream(data: str, expected_chunks: list[int]):
     """
     Sets up a pipeline composed of several threads to test the Cobblestone
     streaming encryption recipe. The steps include:
@@ -107,12 +103,12 @@ def main():
     threads: list[Thread] = []
 
     lines: list[str]
-    with open("integration_testing/example_data.txt") as example_data:
+    with open(data) as example_data:
         lines = example_data.readlines()
 
     threads.append(Thread(target=encode, args=[lines, encoded]))
     threads.append(Thread(target=encrypt, args=[encoded, mock_socket_a, mock_socket_b]))
-    threads.append(Thread(target=ensure_encrypted, args=["".join(lines), mock_socket_b]))
+    threads.append(Thread(target=ensure_encrypted, args=["".join(lines), mock_socket_b, expected_chunks]))
     threads.append(Thread(target=decrypt, args=[mock_socket_a, decrypted]))
     threads.append(Thread(target=decode_eval, args=["".join(lines), decrypted]))
 
@@ -122,12 +118,11 @@ def main():
     for t in threads:
         t.join()
 
-    # with open("integration_testing/stream_output.txt", "w") as output_file:
-    #     try:
-    #         result = output.get_nowait()
-    #         output_file.write(result)
-    #     except Empty:
-    #         pass
+def test_short_stream():
+    """ensures correct behavior for a short (few hundred byte) example"""
+    eval_cobblestone_on_stream("integration_testing/example_short.txt", [56, 237])
 
-if __name__ == "__main__":
-    main()
+def test_long_stream():
+    """ensures correct behavior for a longer (~98kb) example"""
+    chunk_lengths = [56, 16400, 16400, 16400, 16400, 16400, 9442]
+    eval_cobblestone_on_stream("integration_testing/example_short.txt", chunk_lengths)
